@@ -751,7 +751,7 @@ Create `src/cli/main.cpp`:
 namespace {
 
 void print_usage(std::ostream& out) {
-    out << "usage: adipy lex <path>\n";
+    out << "usage: adipy <lex|parse> <path>\n";
 }
 
 bool read_file(const std::string& path, std::string& out) {
@@ -840,11 +840,11 @@ Expected output includes:
 
 Run: `./build/adipy`
 
-Expected: nonzero exit and `usage: adipy lex <path>` on stderr.
+Expected: nonzero exit and `usage: adipy <lex|parse> <path>` on stderr.
 
 Run: `./build/adipy parse /tmp/adipy-smoke.pj`
 
-Expected: nonzero exit and `usage: adipy lex <path>` on stderr.
+Expected: zero exit after parser support is added.
 
 Run: `./build/adipy lex /tmp/does-not-exist.pj`
 

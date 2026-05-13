@@ -1,6 +1,7 @@
 CXX ?= g++
 CXXFLAGS ?= -std=c++20 -Wall -Wextra -Wpedantic -g
 CPPFLAGS ?= -Iinclude
+ASAN_OPTIONS ?= detect_leaks=0
 
 BUILD_DIR := build
 CLI_BIN := $(BUILD_DIR)/adipy
@@ -24,7 +25,7 @@ $(TEST_BIN): $(TEST_SRCS) $(FRONTEND_SRCS) | $(BUILD_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $^ -o $@
 
 test: $(TEST_BIN)
-	$(TEST_BIN)
+	ASAN_OPTIONS=$(ASAN_OPTIONS) $(TEST_BIN)
 
 clean:
 	rm -rf $(BUILD_DIR)

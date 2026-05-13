@@ -1,4 +1,5 @@
 #include "adipy/lexer.h"
+#include "adipy/parser.h"
 
 #include <fstream>
 #include <iostream>
@@ -8,7 +9,7 @@
 namespace {
 
 void print_usage(std::ostream& out) {
-    out << "usage: adipy lex <path>\n";
+    out << "usage: adipy <lex|parse> <path>\n";
 }
 
 bool read_file(const std::string& path, std::string& out) {
@@ -47,6 +48,24 @@ int lex_file(const std::string& path) {
     return 0;
 }
 
+int parse_file(const std::string& path) {
+    std::string source;
+    if (!read_file(path, source)) {
+        std::cerr << "error: unable to read file '" << path << "'\n";
+        return 1;
+    }
+
+    const auto result = adipy::parse(source);
+    if (!result.ok()) {
+        const auto& diagnostic = result.diagnostics.front();
+        std::cerr << diagnostic.location.line << ':' << diagnostic.location.column
+                  << ": error: " << diagnostic.message << '\n';
+        return 1;
+    }
+
+    return 0;
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -58,6 +77,9 @@ int main(int argc, char** argv) {
     const std::string command = argv[1];
     if (command == "lex") {
         return lex_file(argv[2]);
+    }
+    if (command == "parse") {
+        return parse_file(argv[2]);
     }
 
     print_usage(std::cerr);

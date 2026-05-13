@@ -202,8 +202,9 @@ private:
             fail(target->location, "invalid assignment target");
         }
 
+        const auto location = target->location;
         auto value = parse_assignment();
-        return wrap_expr(target->location, AssignExpr{std::move(target), std::move(value)});
+        return wrap_expr(location, AssignExpr{std::move(target), std::move(value)});
     }
 
     ExprPtr parse_or() {

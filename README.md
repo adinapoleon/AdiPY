@@ -1,4 +1,4 @@
-# Python-Inspired JIT in C++: v1 Plan
+# Adipy: Python-Inspired JIT in C++
 
 ## Summary
 
@@ -12,6 +12,13 @@ Build a C++ JIT compiler/runtime for a **strongly typed, Python-inspired languag
 6. Use a **mark-and-sweep GC** for heap objects
 
 This is not “Python syntax with annotations”; it is a **Pythonic language design with C-shaped surface syntax**.
+
+Current developer slice:
+
+- `make` builds the CLI at `build/adipy`
+- `make test` builds and runs lexer/parser tests
+- `build/adipy lex <path>` prints tokens
+- `build/adipy parse <path>` syntax-checks a source file
 
 ## Key Changes / Implementation
 
