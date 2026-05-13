@@ -1,4 +1,4 @@
-#include "pyjit/lexer.h"
+#include "adipy/lexer.h"
 
 #include <fstream>
 #include <iostream>
@@ -8,7 +8,7 @@
 namespace {
 
 void print_usage(std::ostream& out) {
-    out << "usage: pyjit lex <path>\n";
+    out << "usage: adipy lex <path>\n";
 }
 
 bool read_file(const std::string& path, std::string& out) {
@@ -30,7 +30,7 @@ int lex_file(const std::string& path) {
         return 1;
     }
 
-    const auto result = pyjit::lex(source);
+    const auto result = adipy::lex(source);
     if (!result.ok()) {
         const auto& diagnostic = result.diagnostics.front();
         std::cerr << diagnostic.location.line << ':' << diagnostic.location.column
@@ -40,7 +40,7 @@ int lex_file(const std::string& path) {
 
     for (const auto& token : result.tokens) {
         std::cout << token.location.line << ':' << token.location.column << ' '
-                  << pyjit::token_kind_name(token.kind) << " \""
+                  << adipy::token_kind_name(token.kind) << " \""
                   << token.lexeme << "\"\n";
     }
 

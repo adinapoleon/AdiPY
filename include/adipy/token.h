@@ -3,9 +3,9 @@
 #include <string>
 #include <string_view>
 
-#include "pyjit/source_location.h"
+#include "adipy/source_location.h"
 
-namespace pyjit {
+namespace adipy {
 
 enum class TokenKind {
     EndOfFile,
@@ -63,4 +63,4 @@ struct Token {
 
 std::string_view token_kind_name(TokenKind kind);
 
-}  // namespace pyjit
+}  // namespace adipy

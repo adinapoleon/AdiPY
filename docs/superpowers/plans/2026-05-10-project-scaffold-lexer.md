@@ -4,7 +4,7 @@
 
 **Goal:** Build the first working C++ slice: Makefile, CLI entry point, token model, handwritten lexer, and lightweight lexer tests.
 
-**Architecture:** Keep frontend code in `include/pyjit` and `src/frontend`, with the CLI in `src/cli`. The lexer is a deterministic scanner over `std::string_view`, returning either tokens or one concise diagnostic.
+**Architecture:** Keep frontend code in `include/adipy` and `src/frontend`, with the CLI in `src/cli`. The lexer is a deterministic scanner over `std::string_view`, returning either tokens or one concise diagnostic.
 
 **Tech Stack:** C++20, GNU Make, standard library only, in-repo test harness.
 
@@ -14,11 +14,11 @@
 
 - Create: `.gitignore` if missing; ensure it ignores `build/` and `docs/superpowers/specs/*.md`
 - Create: `Makefile` for CLI and test builds
-- Create: `include/pyjit/source_location.h` for source coordinates
-- Create: `include/pyjit/token.h` for token kinds, token values, and display helpers
-- Create: `include/pyjit/lexer.h` for lexer API and diagnostic types
+- Create: `include/adipy/source_location.h` for source coordinates
+- Create: `include/adipy/token.h` for token kinds, token values, and display helpers
+- Create: `include/adipy/lexer.h` for lexer API and diagnostic types
 - Create: `src/frontend/lexer.cpp` for scanner implementation
-- Create: `src/cli/main.cpp` for `pyjit lex <path>`
+- Create: `src/cli/main.cpp` for `adipy lex <path>`
 - Create: `tests/test_main.cpp` for the test runner entry point
 - Create: `tests/lexer_tests.cpp` for lexer behavior tests
 
@@ -47,8 +47,8 @@ CXXFLAGS ?= -std=c++20 -Wall -Wextra -Wpedantic -g
 CPPFLAGS ?= -Iinclude
 
 BUILD_DIR := build
-CLI_BIN := $(BUILD_DIR)/pyjit
-TEST_BIN := $(BUILD_DIR)/pyjit_tests
+CLI_BIN := $(BUILD_DIR)/adipy
+TEST_BIN := $(BUILD_DIR)/adipy_tests
 
 FRONTEND_SRCS := src/frontend/lexer.cpp
 CLI_SRCS := src/cli/main.cpp
@@ -90,32 +90,32 @@ git commit -m "build: add makefile scaffold"
 ## Task 2: Public Token and Lexer Interfaces
 
 **Files:**
-- Create: `include/pyjit/source_location.h`
-- Create: `include/pyjit/token.h`
-- Create: `include/pyjit/lexer.h`
+- Create: `include/adipy/source_location.h`
+- Create: `include/adipy/token.h`
+- Create: `include/adipy/lexer.h`
 
 - [ ] **Step 1: Create source location type**
 
-Create `include/pyjit/source_location.h`:
+Create `include/adipy/source_location.h`:
 
 ```cpp
 #pragma once
 
 #include <cstddef>
 
-namespace pyjit {
+namespace adipy {
 
 struct SourceLocation {
     std::size_t line = 1;
     std::size_t column = 1;
 };
 
-}  // namespace pyjit
+}  // namespace adipy
 ```
 
 - [ ] **Step 2: Create token kinds and token type**
 
-Create `include/pyjit/token.h`:
+Create `include/adipy/token.h`:
 
 ```cpp
 #pragma once
@@ -123,9 +123,9 @@ Create `include/pyjit/token.h`:
 #include <string>
 #include <string_view>
 
-#include "pyjit/source_location.h"
+#include "adipy/source_location.h"
 
-namespace pyjit {
+namespace adipy {
 
 enum class TokenKind {
     EndOfFile,
@@ -183,12 +183,12 @@ struct Token {
 
 std::string_view token_kind_name(TokenKind kind);
 
-}  // namespace pyjit
+}  // namespace adipy
 ```
 
 - [ ] **Step 3: Create lexer API**
 
-Create `include/pyjit/lexer.h`:
+Create `include/adipy/lexer.h`:
 
 ```cpp
 #pragma once
@@ -197,10 +197,10 @@ Create `include/pyjit/lexer.h`:
 #include <string_view>
 #include <vector>
 
-#include "pyjit/source_location.h"
-#include "pyjit/token.h"
+#include "adipy/source_location.h"
+#include "adipy/token.h"
 
-namespace pyjit {
+namespace adipy {
 
 struct LexerDiagnostic {
     SourceLocation location;
@@ -218,7 +218,7 @@ struct LexResult {
 
 LexResult lex(std::string_view source);
 
-}  // namespace pyjit
+}  // namespace adipy
 ```
 
 - [ ] **Step 4: Run build**
@@ -230,7 +230,7 @@ Expected: FAIL because `src/frontend/lexer.cpp` and `src/cli/main.cpp` do not ex
 - [ ] **Step 5: Commit**
 
 ```bash
-git add include/pyjit/source_location.h include/pyjit/token.h include/pyjit/lexer.h
+git add include/adipy/source_location.h include/adipy/token.h include/adipy/lexer.h
 git commit -m "feat: define lexer public interfaces"
 ```
 
@@ -268,7 +268,7 @@ int main() {
 Create `tests/lexer_tests.cpp`:
 
 ```cpp
-#include "pyjit/lexer.h"
+#include "adipy/lexer.h"
 
 #include <sstream>
 #include <stdexcept>
@@ -277,7 +277,7 @@ Create `tests/lexer_tests.cpp`:
 
 namespace {
 
-using pyjit::TokenKind;
+using adipy::TokenKind;
 
 void require(bool condition, const std::string& message) {
     if (!condition) {
@@ -285,7 +285,7 @@ void require(bool condition, const std::string& message) {
     }
 }
 
-void require_ok(const pyjit::LexResult& result) {
+void require_ok(const adipy::LexResult& result) {
     if (!result.ok()) {
         std::ostringstream out;
         out << result.diagnostics.front().location.line << ':'
@@ -295,7 +295,7 @@ void require_ok(const pyjit::LexResult& result) {
     }
 }
 
-std::vector<TokenKind> kinds_without_eof(const pyjit::LexResult& result) {
+std::vector<TokenKind> kinds_without_eof(const adipy::LexResult& result) {
     std::vector<TokenKind> kinds;
     for (const auto& token : result.tokens) {
         if (token.kind != TokenKind::EndOfFile) {
@@ -306,13 +306,13 @@ std::vector<TokenKind> kinds_without_eof(const pyjit::LexResult& result) {
 }
 
 void expect_kinds(const std::string& source, const std::vector<TokenKind>& expected) {
-    auto result = pyjit::lex(source);
+    auto result = adipy::lex(source);
     require_ok(result);
     require(kinds_without_eof(result) == expected, "token kind sequence mismatch");
 }
 
 void test_keywords_and_identifiers() {
-    auto result = pyjit::lex("class classic extends iffy if else while return break continue true false int bool void this super null name_1");
+    auto result = adipy::lex("class classic extends iffy if else while return break continue true false int bool void this super null name_1");
     require_ok(result);
 
     const std::vector<TokenKind> expected = {
@@ -384,7 +384,7 @@ void test_two_character_tokens() {
 }
 
 void test_locations() {
-    auto result = pyjit::lex("int\n  value");
+    auto result = adipy::lex("int\n  value");
     require_ok(result);
     require(result.tokens[0].location.line == 1, "first token line mismatch");
     require(result.tokens[0].location.column == 1, "first token column mismatch");
@@ -393,30 +393,30 @@ void test_locations() {
 }
 
 void test_invalid_character() {
-    auto result = pyjit::lex("@");
+    auto result = adipy::lex("@");
     require(!result.ok(), "invalid character should fail");
     require(result.diagnostics.front().location.line == 1, "invalid character line mismatch");
     require(result.diagnostics.front().location.column == 1, "invalid character column mismatch");
 }
 
 void test_standalone_ampersand_and_pipe() {
-    auto amp = pyjit::lex("&");
+    auto amp = adipy::lex("&");
     require(!amp.ok(), "standalone ampersand should fail");
     require(amp.diagnostics.front().message == "unexpected character '&'; did you mean '&&'?", "ampersand diagnostic mismatch");
 
-    auto pipe = pyjit::lex("|");
+    auto pipe = adipy::lex("|");
     require(!pipe.ok(), "standalone pipe should fail");
     require(pipe.diagnostics.front().message == "unexpected character '|'; did you mean '||'?", "pipe diagnostic mismatch");
 }
 
 void test_integer_literals() {
-    auto result = pyjit::lex("0 12 345");
+    auto result = adipy::lex("0 12 345");
     require_ok(result);
     require(result.tokens[0].lexeme == "0", "zero literal mismatch");
     require(result.tokens[1].lexeme == "12", "integer literal mismatch");
     require(result.tokens[2].lexeme == "345", "integer literal mismatch");
 
-    auto leading_zero = pyjit::lex("012");
+    auto leading_zero = adipy::lex("012");
     require(!leading_zero.ok(), "leading zero integer should fail");
     require(leading_zero.diagnostics.front().message == "invalid integer literal with leading zero", "leading zero diagnostic mismatch");
 }
@@ -458,13 +458,13 @@ git commit -m "test: add lexer behavior tests"
 Create `src/frontend/lexer.cpp`:
 
 ```cpp
-#include "pyjit/lexer.h"
+#include "adipy/lexer.h"
 
 #include <cctype>
 #include <string_view>
 #include <unordered_map>
 
-namespace pyjit {
+namespace adipy {
 namespace {
 
 bool is_identifier_start(char ch) {
@@ -715,7 +715,7 @@ LexResult lex(std::string_view source) {
     return Lexer(source).run();
 }
 
-}  // namespace pyjit
+}  // namespace adipy
 ```
 
 - [ ] **Step 2: Run lexer tests**
@@ -741,7 +741,7 @@ git commit -m "feat: implement handwritten lexer"
 Create `src/cli/main.cpp`:
 
 ```cpp
-#include "pyjit/lexer.h"
+#include "adipy/lexer.h"
 
 #include <fstream>
 #include <iostream>
@@ -751,7 +751,7 @@ Create `src/cli/main.cpp`:
 namespace {
 
 void print_usage(std::ostream& out) {
-    out << "usage: pyjit lex <path>\n";
+    out << "usage: adipy lex <path>\n";
 }
 
 bool read_file(const std::string& path, std::string& out) {
@@ -773,7 +773,7 @@ int lex_file(const std::string& path) {
         return 1;
     }
 
-    const auto result = pyjit::lex(source);
+    const auto result = adipy::lex(source);
     if (!result.ok()) {
         const auto& diagnostic = result.diagnostics.front();
         std::cerr << diagnostic.location.line << ':' << diagnostic.location.column
@@ -783,7 +783,7 @@ int lex_file(const std::string& path) {
 
     for (const auto& token : result.tokens) {
         std::cout << token.location.line << ':' << token.location.column << ' '
-                  << pyjit::token_kind_name(token.kind) << " \""
+                  << adipy::token_kind_name(token.kind) << " \""
                   << token.lexeme << "\"\n";
     }
 
@@ -812,15 +812,15 @@ int main(int argc, char** argv) {
 
 Run: `make`
 
-Expected: PASS and create `build/pyjit`.
+Expected: PASS and create `build/adipy`.
 
 - [ ] **Step 3: Smoke test CLI manually**
 
 Run:
 
 ```bash
-printf 'class Point { int x; }\n' > /tmp/pyjit-smoke.pj
-./build/pyjit lex /tmp/pyjit-smoke.pj
+printf 'class Point { int x; }\n' > /tmp/adipy-smoke.pj
+./build/adipy lex /tmp/adipy-smoke.pj
 ```
 
 Expected output includes:
@@ -838,23 +838,23 @@ Expected output includes:
 
 - [ ] **Step 4: Verify CLI error behavior**
 
-Run: `./build/pyjit`
+Run: `./build/adipy`
 
-Expected: nonzero exit and `usage: pyjit lex <path>` on stderr.
+Expected: nonzero exit and `usage: adipy lex <path>` on stderr.
 
-Run: `./build/pyjit parse /tmp/pyjit-smoke.pj`
+Run: `./build/adipy parse /tmp/adipy-smoke.pj`
 
-Expected: nonzero exit and `usage: pyjit lex <path>` on stderr.
+Expected: nonzero exit and `usage: adipy lex <path>` on stderr.
 
-Run: `./build/pyjit lex /tmp/does-not-exist.pj`
+Run: `./build/adipy lex /tmp/does-not-exist.pj`
 
 Expected: nonzero exit and `error: unable to read file '/tmp/does-not-exist.pj'` on stderr.
 
 Run:
 
 ```bash
-printf '@\n' > /tmp/pyjit-bad.pj
-./build/pyjit lex /tmp/pyjit-bad.pj
+printf '@\n' > /tmp/adipy-bad.pj
+./build/adipy lex /tmp/adipy-bad.pj
 ```
 
 Expected: nonzero exit and `1:1: error: unexpected character '@'` on stderr.
@@ -890,7 +890,7 @@ make test
 Expected:
 
 - `make clean` removes `build/`
-- `make` builds `build/pyjit`
+- `make` builds `build/adipy`
 - `make test` prints `all tests passed`
 
 - [ ] **Step 2: Check git status**
@@ -904,7 +904,7 @@ Expected: clean worktree, except for intentionally ignored local design specs un
 If files changed during verification, commit them:
 
 ```bash
-git add Makefile include/pyjit src tests .gitignore
+git add Makefile include/adipy src tests .gitignore
 git commit -m "fix: stabilize lexer scaffold"
 ```
 

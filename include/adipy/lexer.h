@@ -4,10 +4,10 @@
 #include <string_view>
 #include <vector>
 
-#include "pyjit/source_location.h"
-#include "pyjit/token.h"
+#include "adipy/source_location.h"
+#include "adipy/token.h"
 
-namespace pyjit {
+namespace adipy {
 
 struct LexerDiagnostic {
     SourceLocation location;
@@ -25,4 +25,4 @@ struct LexResult {
 
 LexResult lex(std::string_view source);
 
-}  // namespace pyjit
+}  // namespace adipy

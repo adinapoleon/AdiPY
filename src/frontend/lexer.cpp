@@ -1,11 +1,11 @@
-#include "pyjit/lexer.h"
+#include "adipy/lexer.h"
 
 #include <cctype>
 #include <string_view>
 #include <unordered_map>
 #include <utility>
 
-namespace pyjit {
+namespace adipy {
 namespace {
 
 bool is_identifier_start(char ch) {
@@ -256,4 +256,4 @@ LexResult lex(std::string_view source) {
     return Lexer(source).run();
 }
 
-}  // namespace pyjit
+}  // namespace adipy
